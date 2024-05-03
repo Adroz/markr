@@ -22,8 +22,8 @@ Future<HttpServer> createServer(List<String> args) {
 }
 
 void main(List<String> args) async {
-  final server = await createServer(args);
   objectBox = await ObjectBox.create();
+  final server = await createServer(args);
 
   print('Server listening on port ${server.port}');
 }

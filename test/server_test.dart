@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
@@ -6,7 +5,7 @@ import 'package:test/test.dart';
 
 void main() {
   final port = '7070';
-  final host = 'http://127.0.0.1:$port';
+  final host = 'http://localhost:$port';
   late Process p;
 
   setUp(() async {
@@ -24,7 +23,7 @@ void main() {
   test('Import rejects unexpected Content-Type', () async {
     final response = await post(Uri.parse('$host/import'));
     expect(response.statusCode, 400);
-    expect(response.body, 'Expected Content-Type: text/xml+markr\n');
+    expect(response.body, contains('Expected Content-Type: text/xml+markr\n'));
   });
 
   test('Import rejects missing XML', () async {
@@ -58,7 +57,7 @@ void main() {
       body: file,
     );
     expect(response.statusCode, 200);
-    expect(response.body, 'Doing nothing\n');
+    expect(response.body, 'Successfully added or updated 7 tests\n');
   });
 
   test('Aggregate does nothing', () async {

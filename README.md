@@ -4,9 +4,7 @@
 
 
 ## Supported functionality
-### TODO: 1. Ingest test results from `POST /import`
-- Expected content-type is text/xml+markr (rejects others)
-- Rejects import if missing any data we expect (ids, scores, date, etc.).
+### 1. Ingest test results from `POST /import`
 - Body is XML. Example:
     ```
     curl -X POST -H 'Content-Type: text/xml+markr' http://localhost:4567/import -d @- 
@@ -27,8 +25,9 @@
             ...
         </mcq-test-results>
     ```
-- TODO: If there is more than one test result for a student (for the same test), we should accept the test with the highest grade and highest available grade. (note: these double-up results could be in separate requests).
-- TODO: Sometimes a test result will miss important information (assume any field we store). When this happens, scrap the whole document (nothing is saved to disk), and we return a `400`
+- Expected content-type is text/xml+markr (rejects others)
+- Rejects import if missing any data we expect (ids, scores, etc.), returning a `400`.
+- If there is more than one test result for a student (for the same test), we accept the highest grade and the highest available grade. (note: these double-up results could be in separate requests).
 
 
 ### TODO: 2. Expose aggregate data at `/results/:test-id/aggregate`
