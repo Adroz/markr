@@ -8,7 +8,6 @@ import 'package:shelf/shelf.dart';
 import 'package:xml/xml.dart';
 
 import '../server.dart';
-import '../utils/math_helper.dart';
 
 /// This controller handles all interactions on the '/import' endpoint.
 class ImportController {
@@ -51,6 +50,7 @@ class ImportController {
         'Successfully added or updated ${results.length} tests\n');
   }
 
+  // TODO: Add tests
   List<TestResult> _getNewOrUpdatedResults(List<TestResult> testResults) {
     final repeatTestResultsQuery = _testBox
         .query(
@@ -93,6 +93,7 @@ class ImportController {
     return resultsToAddOrUpdate;
   }
 
+  // TODO: Add tests
   List<AggregateResult> _getNewOrUpdatedAggregates(
       List<TestResult> testResults) {
     final repeatAggQuery =
@@ -110,7 +111,7 @@ class ImportController {
 
       // return the only result or null if none, throw if more than one result
       final existingAgg = repeatAggQuery.findUnique();
-      var newAgg = _calculateAggregate(testId, results);
+      var newAgg = AggregateResult.fromTestResults(testId, results);
 
       if (existingAgg == null) {
         // We don't have this test aggregate yet, so add it to the list to save.
@@ -128,24 +129,5 @@ class ImportController {
     repeatAggQuery.close();
 
     return aggToAddOrUpdate;
-  }
-
-  AggregateResult _calculateAggregate(
-      int testId, List<TestResult> testResults) {
-    // Double check we're only aggregating the one testId.
-    testResults.where((result) => result.testId == testId);
-
-    var percentageScores = testResults
-        .map((e) => e.marksObtained / e.marksAvailable * 100.0)
-        .toList();
-
-    return AggregateResult(
-      testId: testId,
-      mean: MathHelper.mean(percentageScores),
-      count: testResults.length,
-      p25: MathHelper.percentile(percentageScores, 25),
-      p50: MathHelper.percentile(percentageScores, 50),
-      p75: MathHelper.percentile(percentageScores, 75),
-    );
   }
 }

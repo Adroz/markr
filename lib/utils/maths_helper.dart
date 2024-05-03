@@ -1,5 +1,5 @@
 /// A utility class to help with maths functions.
-class MathHelper {
+class MathsHelper {
   /// Finds the mean of a given list of numbers.
   static double mean(List<double> scores) {
     // Add all scores together
