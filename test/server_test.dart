@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:http/http.dart';
+import 'package:markr/aggregate_result.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -51,6 +52,9 @@ void main() {
   test('Import returns 200 with correct XML and header', () async {
     var file = await File('./test/good_import.xml').readAsString();
 
+    // NOTE: This test has 8 entries, but one is a duplicate test-id &
+    // student-number, so we only expect 7 in return.
+
     final response = await post(
       Uri.parse('$host/import'),
       headers: {HttpHeaders.contentTypeHeader: 'text/xml+markr'},
@@ -58,6 +62,29 @@ void main() {
     );
     expect(response.statusCode, 200);
     expect(response.body, 'Successfully added or updated 7 tests\n');
+  });
+
+  test('Results/testId:/aggregate returns expected JSON', () async {
+    var file = await File('./test/good_import.xml').readAsString();
+
+    await post(
+      Uri.parse('$host/import'),
+      headers: {HttpHeaders.contentTypeHeader: 'text/xml+markr'},
+      body: file,
+    );
+
+    final responseJson = AggregateResult(
+            testId: 9863,
+            mean: 56.42857142857143,
+            count: 7,
+            p25: 40,
+            p50: 60,
+            p75: 65)
+        .toJson();
+
+    var response = await get(Uri.parse('$host/results/9863/aggregate'));
+
+    expect(response.body, '$responseJson\n');
   });
 
   test('Aggregate 404\'s corresponding testId aggregate can\'t be found',
@@ -68,13 +95,6 @@ void main() {
     expect(response.body,
         'No results for the given test ($testId) could be found.\n');
   });
-
-  // test('Aggregate returns json string', () async {
-  //   int testId = 1234;
-  //   final response = await get(Uri.parse('$host/results/1234/aggregate'));
-  //   expect(response.statusCode, 200);
-  //   expect(response.body, 'Doing nothing too\n');
-  // });
 
   test('404 on unexpected endpoint', () async {
     final response = await get(Uri.parse('$host/foobar'));

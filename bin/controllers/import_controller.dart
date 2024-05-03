@@ -43,7 +43,16 @@ class ImportController {
     // Calculate and save tests and aggregates to the database.
     var results = _getNewOrUpdatedResults(testsFromImport);
     await _testBox.putManyAsync(results);
-    var aggregates = _getNewOrUpdatedAggregates(results);
+
+    // Get the testId's of what was added/updated, then find all the records in
+    // the db (since we might have some existing ones).
+    var newOrUpdatedTestIds = results.map((e) => e.testId).toList();
+    var affectedTestsQuery =
+        _testBox.query(TestResult_.testId.oneOf(newOrUpdatedTestIds)).build();
+    var affectedTests = await affectedTestsQuery.findAsync();
+    affectedTestsQuery.close();
+
+    var aggregates = _getNewOrUpdatedAggregates(affectedTests);
     await _aggregateBox.putManyAsync(aggregates);
 
     return Response.ok(
@@ -67,8 +76,12 @@ class ImportController {
           test.studentNumber;
       repeatTestResultsQuery.param(TestResult_.testId).value = test.testId;
 
-      // return the only result or null if none, throw if more than one result
-      final existingResult = repeatTestResultsQuery.findUnique();
+      // Return an existing user from the current list, or the db.
+      // Throw if there's more than one result, or leave null.
+      final existingInDb = repeatTestResultsQuery.findUnique();
+      final existingInToAdd = resultsToAddOrUpdate.singleWhereOrNull((e) =>
+          e.studentNumber == test.studentNumber && e.testId == test.testId);
+      final existingResult = existingInDb ?? existingInToAdd;
 
       if (existingResult == null) {
         // We don't have this test & student, so add it to the list to save.
@@ -81,11 +94,14 @@ class ImportController {
         existingResult.marksAvailable =
             max(existingResult.marksAvailable, test.marksAvailable);
         existingResult.marksObtained =
-            max(existingResult.marksAvailable, test.marksAvailable);
+            max(existingResult.marksObtained, test.marksObtained);
 
-        // Adding an existing result won't duplicate it, it'll just update its
-        // property values.
-        resultsToAddOrUpdate.add(existingResult);
+        if (existingInToAdd == null) {
+          // We don't need to add an item that's already in the list to add, but
+          // adding an existing db result won't duplicate it, it'll just update
+          // its property values.
+          resultsToAddOrUpdate.add(existingResult);
+        }
       }
     }
     repeatTestResultsQuery.close();
@@ -122,7 +138,7 @@ class ImportController {
 
         // Adding an existing result won't duplicate it, it'll just update its
         // property values.
-        aggToAddOrUpdate.add(existingAgg);
+        aggToAddOrUpdate.add(newAgg);
       }
     });
 

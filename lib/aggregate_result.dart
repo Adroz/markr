@@ -1,15 +1,10 @@
-import 'package:json_annotation/json_annotation.dart';
 import 'package:markr/test_result.dart';
 import 'package:markr/utils/maths_helper.dart';
 import 'package:objectbox/objectbox.dart';
 
-part 'aggregate_result.g.dart';
-
 @Entity()
-@JsonSerializable()
 class AggregateResult {
   @Id()
-  @JsonKey(includeToJson: false)
   int id = 0;
 
   int testId;
@@ -28,13 +23,14 @@ class AggregateResult {
     required this.p75,
   });
 
+  /// Given a list of test results, generate the aggregate scores.
   factory AggregateResult.fromTestResults(
       int testId, List<TestResult> testResults) {
     // Double check we're only aggregating the one testId.
     testResults.where((result) => result.testId == testId);
 
     var percentageScores = testResults
-        .map((e) => e.marksObtained / e.marksAvailable * 100.0)
+        .map((e) => (e.marksObtained / e.marksAvailable) * 100.0)
         .toList();
 
     return AggregateResult(
@@ -47,11 +43,12 @@ class AggregateResult {
     );
   }
 
-  /// Connect the generated [_$AggregateResultFromJson] function to the `fromJson`
-  /// factory.
-  factory AggregateResult.fromJson(Map<String, dynamic> json) =>
-      _$AggregateResultFromJson(json);
-
-  /// Connect the generated [_$AggregateResultToJson] function to the `toJson` method.
-  Map<String, dynamic> toJson() => _$AggregateResultToJson(this);
+  Map<String, dynamic> toJson() => {
+        'testId': testId,
+        'mean': mean,
+        'count': count,
+        'p25': p25,
+        'p50': p50,
+        'p75': p75,
+      };
 }
