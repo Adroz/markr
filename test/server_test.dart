@@ -4,8 +4,8 @@ import 'package:http/http.dart';
 import 'package:test/test.dart';
 
 void main() {
-  final port = '8080';
-  final host = 'http://0.0.0.0:$port';
+  final port = '7070';
+  final host = 'http://127.0.0.1:$port';
   late Process p;
 
   setUp(() async {
@@ -20,19 +20,19 @@ void main() {
 
   tearDown(() => p.kill());
 
-  test('Root', () async {
-    final response = await get(Uri.parse('$host/'));
+  test('Import does nothing', () async {
+    final response = await post(Uri.parse('$host/import'));
     expect(response.statusCode, 200);
-    expect(response.body, 'Hello, World!\n');
+    expect(response.body, 'Doing nothing\n');
   });
 
-  test('Echo', () async {
-    final response = await get(Uri.parse('$host/echo/hello'));
+  test('Aggregate does nothing', () async {
+    final response = await get(Uri.parse('$host/results/1234/aggregate'));
     expect(response.statusCode, 200);
-    expect(response.body, 'hello\n');
+    expect(response.body, 'Doing nothing too\n');
   });
 
-  test('404', () async {
+  test('404 on unexpected endpoint', () async {
     final response = await get(Uri.parse('$host/foobar'));
     expect(response.statusCode, 404);
   });
