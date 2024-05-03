@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
@@ -20,8 +21,42 @@ void main() {
 
   tearDown(() => p.kill());
 
-  test('Import does nothing', () async {
+  test('Import rejects unexpected Content-Type', () async {
     final response = await post(Uri.parse('$host/import'));
+    expect(response.statusCode, 400);
+    expect(response.body, 'Expected Content-Type: text/xml+markr\n');
+  });
+
+  test('Import rejects missing XML', () async {
+    final response = await post(
+      Uri.parse('$host/import'),
+      headers: {HttpHeaders.contentTypeHeader: 'text/xml+markr'},
+    );
+    expect(response.statusCode, 400);
+    expect(response.body, contains('Badly formatted or missing XML'));
+  });
+
+  test('Import rejects missing required fields', () async {
+    var file = await File('./test/import_missing_fields.xml').readAsString();
+
+    final response = await post(
+      Uri.parse('$host/import'),
+      headers: {HttpHeaders.contentTypeHeader: 'text/xml+markr'},
+      body: file,
+    );
+    expect(response.statusCode, 400);
+    expect(response.body,
+        'Field student-number doesn\'t exist, or multiple were found.');
+  });
+
+  test('Import returns 200 with correct XML and header', () async {
+    var file = await File('./test/good_import.xml').readAsString();
+
+    final response = await post(
+      Uri.parse('$host/import'),
+      headers: {HttpHeaders.contentTypeHeader: 'text/xml+markr'},
+      body: file,
+    );
     expect(response.statusCode, 200);
     expect(response.body, 'Doing nothing\n');
   });

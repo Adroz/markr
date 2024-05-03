@@ -3,11 +3,10 @@
 *This sample code handles HTTP GET requests to `/` and `/echo/<message>`*
 
 
-## TODO: Support functionality:
+## Supported functionality
 ### TODO: 1. Ingest test results from `POST /import`
-- Expected content-type is text/xml+markr
-    - TODO: Reject other content types at this endpoint?
-- TODO: Reject import if missing any data we expect (ids, scores, date, etc.).
+- Expected content-type is text/xml+markr (rejects others)
+- Rejects import if missing any data we expect (ids, scores, date, etc.).
 - Body is XML. Example:
     ```
     curl -X POST -H 'Content-Type: text/xml+markr' http://localhost:4567/import -d @- 
