@@ -10,6 +10,7 @@ import 'package:xml/xml.dart';
 import '../server.dart';
 import '../utils/math_helper.dart';
 
+/// This controller handles all interactions on the '/import' endpoint.
 class ImportController {
   final _testBox = objectBox.testResultBox;
   final _aggregateBox = objectBox.aggregateResultBox;
@@ -73,6 +74,8 @@ class ImportController {
         // We don't have this test & student, so add it to the list to save.
         resultsToAddOrUpdate.add(test);
       } else {
+        // TODO: Do a comparison on existing vs new result so we don't unnecessarily update the existing result with the same values.
+
         // We have this test & student already, so use the highest available and
         // obtained test scores.
         existingResult.marksAvailable =

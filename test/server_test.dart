@@ -60,11 +60,21 @@ void main() {
     expect(response.body, 'Successfully added or updated 7 tests\n');
   });
 
-  test('Aggregate does nothing', () async {
-    final response = await get(Uri.parse('$host/results/1234/aggregate'));
-    expect(response.statusCode, 200);
-    expect(response.body, 'Doing nothing too\n');
+  test('Aggregate 404\'s corresponding testId aggregate can\'t be found',
+      () async {
+    int testId = 1234;
+    final response = await get(Uri.parse('$host/results/$testId/aggregate'));
+    expect(response.statusCode, 404);
+    expect(response.body,
+        'No results for the given test ($testId) could be found.\n');
   });
+
+  // test('Aggregate returns json string', () async {
+  //   int testId = 1234;
+  //   final response = await get(Uri.parse('$host/results/1234/aggregate'));
+  //   expect(response.statusCode, 200);
+  //   expect(response.body, 'Doing nothing too\n');
+  // });
 
   test('404 on unexpected endpoint', () async {
     final response = await get(Uri.parse('$host/foobar'));

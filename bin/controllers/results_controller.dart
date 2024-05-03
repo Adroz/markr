@@ -1,6 +1,12 @@
+import 'package:collection/collection.dart';
 import 'package:shelf/shelf.dart';
 
+import '../server.dart';
+
+/// This controller handles all interactions on the '/results' endpoint.
 class ResultsController {
+  final _aggregateBox = objectBox.aggregateResultBox;
+
   Future<Response> aggregateResultsHandler(
     Request req,
     String givenTestId,
@@ -13,6 +19,16 @@ class ResultsController {
           body: 'The given test ($givenTestId) was not a number.\n');
     }
 
-    return Response.ok('Dummy result\n');
+    var aggregate = await _aggregateBox
+        .getAllAsync()
+        .then((aggs) => aggs.singleWhereOrNull((agg) => agg.testId == testId));
+
+    if (aggregate == null) {
+      return Response.notFound(
+          'No results for the given test ($givenTestId) could be found.\n');
+    }
+
+    // Finally, send the aggregate result.
+    return Response.ok('${aggregate.toJson()}\n');
   }
 }

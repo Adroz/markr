@@ -28,7 +28,7 @@
 
 
 ### 2. Expose aggregate data at `/results/:test-id/aggregate`
-- TODO: Provide results as a JSON document with the following fields
+- Provides results as a JSON document with the following fields
     -   `mean` - the mean of the awarded marks
     -   `count` - the number of students who took the test
     -   `p25`, `p50`, `p75` - the 25th percentile, median, and 75th percentile scores
