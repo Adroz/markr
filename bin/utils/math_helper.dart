@@ -9,8 +9,10 @@ class MathHelper {
     return totalObtained / scores.length;
   }
 
-  /// Takes in a list of scores and a desired percentile.
+  /// Takes in a list of scores and a desired percentile. (Nearers Rank method)
   static double percentile(List<double> scores, double percentile) {
+    scores.sort((a, b) => a.compareTo(b));
+
     int index = (percentile / 100.0 * scores.length).ceil();
     return scores[index - 1];
   }
