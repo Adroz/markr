@@ -1,4 +1,5 @@
 # Markr ingestion & processing service
+To run, simply run the `compose.yaml` file. At present, only the port is configurable. You can then interact with the server using cURLs.
 
 ## Supported functionality
 ### 1. Ingest test results from `POST /import`
@@ -38,6 +39,7 @@
     curl http://localhost:4567/results/1234/aggregate
     {"mean":65.0,"stddev":0.0,"min":65.0,"max":65.0,"p25":65.0,"p50":65.0,"p75":65.0,"count":1}
     ```
+    - TODO: We don't actually return `stddev`,`min`,`max` yet, but they'd be quick to add.
 
 ## Other notes
 - Assumptions:
@@ -46,7 +48,15 @@
     - We'll need to calculate scores eventually.
 - TODO: Tests
     - Ingest multiple student results for the same test (with a difference in grade and available grade). Test across multiple transations, and more than 2 results.
-    - Test import -> aggregate results for known values.
+    - I should really have db state tests (wasn't sure how to accomplish with the time given, which is why I tested POST/GET responses).
+    - Fix the broken CI tests in GitHub Actions (GitHub fails the network tests--they run locally).
+- TODO: Add Docker build to GitHub Actions for automatic deployment.
 - TODO: How will this handled real-time dashboards?
 - TODO: The folder structure isn't the best as I didn't have time to configure the `build_runner` to look for files in the non-default location.
-- TODO: if we want to support serving *student* aggregate results we’ll need another box, and we’ll need to update whenever a test with their student-number is updated.
+- TODO: Add clearer method/function comments to make consumption easier.
+- TODO: if we want to support serving *student* aggregate results we’ll need another box/table, and we’ll need to update whenever a test with their student-number is updated.
+
+## Approach
+I come from a client (Windows, WPF) background, so this was a new experience for me. I picked Dart as I'd been off the tools for a couple of years and have really only been dabling in Flutter/Dart for a personal project or two. As I have played a bit with Firebase I picked a popular, and well supported, local NoSQL db (the more difficult part was getting it to run on Docker).
+
+NOTE: The Docker image *should* be pretty small ~10mb, but (even experimenting outside of the timed hours), I was unable to get the db package working with the small `scratch` base image.

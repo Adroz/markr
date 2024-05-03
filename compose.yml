@@ -1,0 +1,5 @@
+services:
+  server-stuff:
+    image: nikmoores/markr-server
+    ports:
+      - "8080:8080"
