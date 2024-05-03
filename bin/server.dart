@@ -1,9 +1,12 @@
 import 'dart:io';
 
+import 'package:markr/objectbox.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 
 import 'routes/routes.dart';
+
+late ObjectBox objectBox;
 
 Future<HttpServer> createServer(List<String> args) {
   // Use any available host or container IP (usually `0.0.0.0`).
@@ -20,6 +23,7 @@ Future<HttpServer> createServer(List<String> args) {
 
 void main(List<String> args) async {
   final server = await createServer(args);
+  objectBox = await ObjectBox.create();
 
   print('Server listening on port ${server.port}');
 }
