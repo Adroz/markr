@@ -7,7 +7,7 @@ import 'package:xml/xml.dart';
 
 import '../server.dart';
 
-class TestResultController {
+class ImportController {
   final _testBox = objectBox.testResultBox;
 
   Future<Response> importHandler(Request req) async {

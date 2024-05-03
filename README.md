@@ -1,8 +1,5 @@
 # Markr ingestion & processing service
 
-*This sample code handles HTTP GET requests to `/` and `/echo/<message>`*
-
-
 ## Supported functionality
 ### 1. Ingest test results from `POST /import`
 - Body is XML. Example:
@@ -30,7 +27,7 @@
 - If there is more than one test result for a student (for the same test), we accept the highest grade and the highest available grade. (note: these double-up results could be in separate requests).
 
 
-### TODO: 2. Expose aggregate data at `/results/:test-id/aggregate`
+### 2. Expose aggregate data at `/results/:test-id/aggregate`
     - TODO: Provide results as a JSON document with the following fields
         -   `mean` - the mean of the awarded marks
         -   `count` - the number of students who took the test
