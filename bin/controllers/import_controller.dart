@@ -1,14 +1,18 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
+import 'package:markr/aggregate_result.dart';
 import 'package:markr/objectbox.g.dart';
 import 'package:markr/test_result.dart';
 import 'package:shelf/shelf.dart';
 import 'package:xml/xml.dart';
 
 import '../server.dart';
+import '../utils/math_helper.dart';
 
 class ImportController {
   final _testBox = objectBox.testResultBox;
+  final _aggregateBox = objectBox.aggregateResultBox;
 
   Future<Response> importHandler(Request req) async {
     // Only continue if we receive the expected Content-Type
@@ -21,10 +25,10 @@ class ImportController {
     }
 
     final message = await req.readAsString();
-    final List<TestResult> testResults;
+    final List<TestResult> testsFromImport;
 
     try {
-      testResults = XmlDocument.parse(message)
+      testsFromImport = XmlDocument.parse(message)
           .findAllElements('mcq-test-result')
           .map((xmlElement) => TestResult.fromXmlElement(xmlElement))
           .toList();
@@ -36,6 +40,17 @@ class ImportController {
       return Response.badRequest(body: 'Field ${e.name} ${e.message}');
     }
 
+    // Calculate and save tests and aggregates to the database.
+    var results = _getNewOrUpdatedResults(testsFromImport);
+    await _testBox.putManyAsync(results);
+    var aggregates = _getNewOrUpdatedAggregates(results);
+    await _aggregateBox.putManyAsync(aggregates);
+
+    return Response.ok(
+        'Successfully added or updated ${results.length} tests\n');
+  }
+
+  List<TestResult> _getNewOrUpdatedResults(List<TestResult> testResults) {
     final repeatTestResultsQuery = _testBox
         .query(
           TestResult_.studentNumber.equals(0) & TestResult_.testId.equals(0),
@@ -72,9 +87,62 @@ class ImportController {
     }
     repeatTestResultsQuery.close();
 
-    await _testBox.putManyAsync(resultsToAddOrUpdate);
+    return resultsToAddOrUpdate;
+  }
 
-    return Response.ok(
-        'Successfully added or updated ${resultsToAddOrUpdate.length} tests\n');
+  List<AggregateResult> _getNewOrUpdatedAggregates(
+      List<TestResult> testResults) {
+    final repeatAggQuery =
+        _aggregateBox.query(AggregateResult_.testId.equals(0)).build();
+
+    // We add all results we want to add (or existing results to update) to a
+    // list so we can do a single write.
+    var aggToAddOrUpdate = List<AggregateResult>.empty(growable: true);
+
+    // Group the results so we can iterate on testId.
+    testResults
+        .groupListsBy((result) => result.testId)
+        .forEach((testId, results) {
+      repeatAggQuery.param(AggregateResult_.testId).value = testId;
+
+      // return the only result or null if none, throw if more than one result
+      final existingAgg = repeatAggQuery.findUnique();
+      var newAgg = _calculateAggregate(testId, results);
+
+      if (existingAgg == null) {
+        // We don't have this test aggregate yet, so add it to the list to save.
+        aggToAddOrUpdate.add(newAgg);
+      } else {
+        // We have this test aggregate already, so update the calculation.
+        newAgg.id = existingAgg.id;
+
+        // Adding an existing result won't duplicate it, it'll just update its
+        // property values.
+        aggToAddOrUpdate.add(existingAgg);
+      }
+    });
+
+    repeatAggQuery.close();
+
+    return aggToAddOrUpdate;
+  }
+
+  AggregateResult _calculateAggregate(
+      int testId, List<TestResult> testResults) {
+    // Double check we're only aggregating the one testId.
+    testResults.where((result) => result.testId == testId);
+
+    var percentageScores = testResults
+        .map((e) => e.marksObtained / e.marksAvailable * 100.0)
+        .toList();
+
+    return AggregateResult(
+      testId: testId,
+      mean: MathHelper.mean(percentageScores),
+      count: testResults.length,
+      p25: MathHelper.percentile(percentageScores, 25),
+      p50: MathHelper.percentile(percentageScores, 50),
+      p75: MathHelper.percentile(percentageScores, 75),
+    );
   }
 }

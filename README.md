@@ -28,13 +28,13 @@
 
 
 ### 2. Expose aggregate data at `/results/:test-id/aggregate`
-    - TODO: Provide results as a JSON document with the following fields
-        -   `mean` - the mean of the awarded marks
-        -   `count` - the number of students who took the test
-        -   `p25`, `p50`, `p75` - the 25th percentile, median, and 75th percentile scores
-    - Note numbers are in (float) percentages of the available marks in the test.
-    - Example returned data:
-        ```
-        curl http://localhost:4567/results/1234/aggregate
-        {"mean":65.0,"stddev":0.0,"min":65.0,"max":65.0,"p25":65.0,"p50":65.0,"p75":65.0,"count":1}
-        ```
+- TODO: Provide results as a JSON document with the following fields
+    -   `mean` - the mean of the awarded marks
+    -   `count` - the number of students who took the test
+    -   `p25`, `p50`, `p75` - the 25th percentile, median, and 75th percentile scores
+- Note numbers are in (float) percentages of the available marks in the test.
+- Example returned data:
+    ```
+    curl http://localhost:4567/results/1234/aggregate
+    {"mean":65.0,"stddev":0.0,"min":65.0,"max":65.0,"p25":65.0,"p50":65.0,"p75":65.0,"count":1}
+    ```

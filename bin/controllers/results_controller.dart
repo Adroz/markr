@@ -1,14 +1,18 @@
 import 'package:shelf/shelf.dart';
 
-import '../server.dart';
-
 class ResultsController {
-  final _aggregateBox = objectBox.aggregateResultBox;
+  Future<Response> aggregateResultsHandler(
+    Request req,
+    String givenTestId,
+  ) async {
+    // Reject when testId isn't a number
+    var testId = int.tryParse(givenTestId);
 
-  Future<Response> aggregateResultsHandler(Request req) async {
-    // TODO: Reject when testId isn't a number
-    // TODO: Reject when testId isn't found in db
+    if (testId == null) {
+      return Response.badRequest(
+          body: 'The given test ($givenTestId) was not a number.\n');
+    }
 
-    return Response.ok('Doing nothing too\n');
+    return Response.ok('Dummy result\n');
   }
 }

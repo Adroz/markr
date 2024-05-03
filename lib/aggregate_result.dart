@@ -7,17 +7,17 @@ class AggregateResult {
 
   int testId;
   double mean;
-  double count;
+  int count;
   double p25;
   double p50;
   double p75;
 
-  AggregateResult(
-    this.testId,
-    this.mean,
-    this.count,
-    this.p25,
-    this.p50,
-    this.p75,
-  );
+  AggregateResult({
+    required this.testId,
+    required this.mean,
+    required this.count,
+    required this.p25,
+    required this.p50,
+    required this.p75,
+  });
 }

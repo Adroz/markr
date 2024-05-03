@@ -44,7 +44,7 @@ final _entities = <obx_int.ModelEntity>[
         obx_int.ModelProperty(
             id: const obx_int.IdUid(4, 5965791939586749215),
             name: 'count',
-            type: 8,
+            type: 6,
             flags: 0),
         obx_int.ModelProperty(
             id: const obx_int.IdUid(5, 3484908363145696135),
@@ -160,7 +160,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
           fbb.addInt64(0, object.id);
           fbb.addInt64(1, object.testId);
           fbb.addFloat64(2, object.mean);
-          fbb.addFloat64(3, object.count);
+          fbb.addInt64(3, object.count);
           fbb.addFloat64(4, object.p25);
           fbb.addFloat64(5, object.p50);
           fbb.addFloat64(6, object.p75);
@@ -175,7 +175,7 @@ obx_int.ModelDefinition getObjectBoxModel() {
           final meanParam =
               const fb.Float64Reader().vTableGet(buffer, rootOffset, 8, 0);
           final countParam =
-              const fb.Float64Reader().vTableGet(buffer, rootOffset, 10, 0);
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0);
           final p25Param =
               const fb.Float64Reader().vTableGet(buffer, rootOffset, 12, 0);
           final p50Param =
@@ -183,7 +183,12 @@ obx_int.ModelDefinition getObjectBoxModel() {
           final p75Param =
               const fb.Float64Reader().vTableGet(buffer, rootOffset, 16, 0);
           final object = AggregateResult(
-              testIdParam, meanParam, countParam, p25Param, p50Param, p75Param)
+              testId: testIdParam,
+              mean: meanParam,
+              count: countParam,
+              p25: p25Param,
+              p50: p50Param,
+              p75: p75Param)
             ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
 
           return object;
@@ -244,7 +249,7 @@ class AggregateResult_ {
 
   /// see [AggregateResult.count]
   static final count =
-      obx.QueryDoubleProperty<AggregateResult>(_entities[0].properties[3]);
+      obx.QueryIntegerProperty<AggregateResult>(_entities[0].properties[3]);
 
   /// see [AggregateResult.p25]
   static final p25 =
