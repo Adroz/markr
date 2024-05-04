@@ -21,50 +21,6 @@ export 'package:objectbox/objectbox.dart'; // so that callers only have to impor
 
 final _entities = <obx_int.ModelEntity>[
   obx_int.ModelEntity(
-      id: const obx_int.IdUid(1, 1417487715709229111),
-      name: 'AggregateResult',
-      lastPropertyId: const obx_int.IdUid(7, 3468498929524043326),
-      flags: 0,
-      properties: <obx_int.ModelProperty>[
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(1, 5545264077931384085),
-            name: 'id',
-            type: 6,
-            flags: 1),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(2, 7358261212826466400),
-            name: 'testId',
-            type: 6,
-            flags: 0),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(3, 8939589108594969619),
-            name: 'mean',
-            type: 8,
-            flags: 0),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(4, 5965791939586749215),
-            name: 'count',
-            type: 6,
-            flags: 0),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(5, 3484908363145696135),
-            name: 'p25',
-            type: 8,
-            flags: 0),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(6, 5740772086289265293),
-            name: 'p50',
-            type: 8,
-            flags: 0),
-        obx_int.ModelProperty(
-            id: const obx_int.IdUid(7, 3468498929524043326),
-            name: 'p75',
-            type: 8,
-            flags: 0)
-      ],
-      relations: <obx_int.ModelRelation>[],
-      backlinks: <obx_int.ModelBacklink>[]),
-  obx_int.ModelEntity(
       id: const obx_int.IdUid(2, 8272633613617560179),
       name: 'TestResult',
       lastPropertyId: const obx_int.IdUid(5, 440301646409968679),
@@ -94,6 +50,50 @@ final _entities = <obx_int.ModelEntity>[
             id: const obx_int.IdUid(5, 440301646409968679),
             name: 'marksObtained',
             type: 6,
+            flags: 0)
+      ],
+      relations: <obx_int.ModelRelation>[],
+      backlinks: <obx_int.ModelBacklink>[]),
+  obx_int.ModelEntity(
+      id: const obx_int.IdUid(3, 8535671208334237472),
+      name: 'AggregateResult',
+      lastPropertyId: const obx_int.IdUid(7, 6174259679833561627),
+      flags: 0,
+      properties: <obx_int.ModelProperty>[
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(1, 7834400752528761642),
+            name: 'id',
+            type: 6,
+            flags: 1),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(2, 7933733990193126250),
+            name: 'testId',
+            type: 6,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(3, 2239728842368718887),
+            name: 'mean',
+            type: 8,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(4, 95532917812396165),
+            name: 'count',
+            type: 6,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(5, 6448502116301500378),
+            name: 'p25',
+            type: 8,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(6, 1773482445435921751),
+            name: 'p50',
+            type: 8,
+            flags: 0),
+        obx_int.ModelProperty(
+            id: const obx_int.IdUid(7, 6174259679833561627),
+            name: 'p75',
+            type: 8,
             flags: 0)
       ],
       relations: <obx_int.ModelRelation>[],
@@ -134,21 +134,64 @@ obx.Store openStore(
 obx_int.ModelDefinition getObjectBoxModel() {
   final model = obx_int.ModelInfo(
       entities: _entities,
-      lastEntityId: const obx_int.IdUid(2, 8272633613617560179),
+      lastEntityId: const obx_int.IdUid(3, 8535671208334237472),
       lastIndexId: const obx_int.IdUid(0, 0),
       lastRelationId: const obx_int.IdUid(0, 0),
       lastSequenceId: const obx_int.IdUid(0, 0),
-      retiredEntityUids: const [],
+      retiredEntityUids: const [1417487715709229111],
       retiredIndexUids: const [],
-      retiredPropertyUids: const [],
+      retiredPropertyUids: const [
+        5545264077931384085,
+        7358261212826466400,
+        8939589108594969619,
+        5965791939586749215,
+        3484908363145696135,
+        5740772086289265293,
+        3468498929524043326
+      ],
       retiredRelationUids: const [],
       modelVersion: 5,
       modelVersionParserMinimum: 5,
       version: 1);
 
   final bindings = <Type, obx_int.EntityDefinition>{
-    AggregateResult: obx_int.EntityDefinition<AggregateResult>(
+    TestResult: obx_int.EntityDefinition<TestResult>(
         model: _entities[0],
+        toOneRelations: (TestResult object) => [],
+        toManyRelations: (TestResult object) => {},
+        getId: (TestResult object) => object.id,
+        setId: (TestResult object, int id) {
+          object.id = id;
+        },
+        objectToFB: (TestResult object, fb.Builder fbb) {
+          fbb.startTable(6);
+          fbb.addInt64(0, object.id);
+          fbb.addInt64(1, object.testId);
+          fbb.addInt64(2, object.studentNumber);
+          fbb.addInt64(3, object.marksAvailable);
+          fbb.addInt64(4, object.marksObtained);
+          fbb.finish(fbb.endTable());
+          return object.id;
+        },
+        objectFromFB: (obx.Store store, ByteData fbData) {
+          final buffer = fb.BufferContext(fbData);
+          final rootOffset = buffer.derefObject(0);
+          final testIdParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 6, 0);
+          final studentNumberParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 8, 0);
+          final marksAvailableParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0);
+          final marksObtainedParam =
+              const fb.Int64Reader().vTableGet(buffer, rootOffset, 12, 0);
+          final object = TestResult(testIdParam, studentNumberParam,
+              marksAvailableParam, marksObtainedParam)
+            ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
+
+          return object;
+        }),
+    AggregateResult: obx_int.EntityDefinition<AggregateResult>(
+        model: _entities[1],
         toOneRelations: (AggregateResult object) => [],
         toManyRelations: (AggregateResult object) => {},
         getId: (AggregateResult object) => object.id,
@@ -192,97 +235,62 @@ obx_int.ModelDefinition getObjectBoxModel() {
             ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
 
           return object;
-        }),
-    TestResult: obx_int.EntityDefinition<TestResult>(
-        model: _entities[1],
-        toOneRelations: (TestResult object) => [],
-        toManyRelations: (TestResult object) => {},
-        getId: (TestResult object) => object.id,
-        setId: (TestResult object, int id) {
-          object.id = id;
-        },
-        objectToFB: (TestResult object, fb.Builder fbb) {
-          fbb.startTable(6);
-          fbb.addInt64(0, object.id);
-          fbb.addInt64(1, object.testId);
-          fbb.addInt64(2, object.studentNumber);
-          fbb.addInt64(3, object.marksAvailable);
-          fbb.addInt64(4, object.marksObtained);
-          fbb.finish(fbb.endTable());
-          return object.id;
-        },
-        objectFromFB: (obx.Store store, ByteData fbData) {
-          final buffer = fb.BufferContext(fbData);
-          final rootOffset = buffer.derefObject(0);
-          final testIdParam =
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 6, 0);
-          final studentNumberParam =
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 8, 0);
-          final marksAvailableParam =
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0);
-          final marksObtainedParam =
-              const fb.Int64Reader().vTableGet(buffer, rootOffset, 12, 0);
-          final object = TestResult(testIdParam, studentNumberParam,
-              marksAvailableParam, marksObtainedParam)
-            ..id = const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0);
-
-          return object;
         })
   };
 
   return obx_int.ModelDefinition(model, bindings);
 }
 
-/// [AggregateResult] entity fields to define ObjectBox queries.
-class AggregateResult_ {
-  /// see [AggregateResult.id]
-  static final id =
-      obx.QueryIntegerProperty<AggregateResult>(_entities[0].properties[0]);
-
-  /// see [AggregateResult.testId]
-  static final testId =
-      obx.QueryIntegerProperty<AggregateResult>(_entities[0].properties[1]);
-
-  /// see [AggregateResult.mean]
-  static final mean =
-      obx.QueryDoubleProperty<AggregateResult>(_entities[0].properties[2]);
-
-  /// see [AggregateResult.count]
-  static final count =
-      obx.QueryIntegerProperty<AggregateResult>(_entities[0].properties[3]);
-
-  /// see [AggregateResult.p25]
-  static final p25 =
-      obx.QueryDoubleProperty<AggregateResult>(_entities[0].properties[4]);
-
-  /// see [AggregateResult.p50]
-  static final p50 =
-      obx.QueryDoubleProperty<AggregateResult>(_entities[0].properties[5]);
-
-  /// see [AggregateResult.p75]
-  static final p75 =
-      obx.QueryDoubleProperty<AggregateResult>(_entities[0].properties[6]);
-}
-
 /// [TestResult] entity fields to define ObjectBox queries.
 class TestResult_ {
   /// see [TestResult.id]
   static final id =
-      obx.QueryIntegerProperty<TestResult>(_entities[1].properties[0]);
+      obx.QueryIntegerProperty<TestResult>(_entities[0].properties[0]);
 
   /// see [TestResult.testId]
   static final testId =
-      obx.QueryIntegerProperty<TestResult>(_entities[1].properties[1]);
+      obx.QueryIntegerProperty<TestResult>(_entities[0].properties[1]);
 
   /// see [TestResult.studentNumber]
   static final studentNumber =
-      obx.QueryIntegerProperty<TestResult>(_entities[1].properties[2]);
+      obx.QueryIntegerProperty<TestResult>(_entities[0].properties[2]);
 
   /// see [TestResult.marksAvailable]
   static final marksAvailable =
-      obx.QueryIntegerProperty<TestResult>(_entities[1].properties[3]);
+      obx.QueryIntegerProperty<TestResult>(_entities[0].properties[3]);
 
   /// see [TestResult.marksObtained]
   static final marksObtained =
-      obx.QueryIntegerProperty<TestResult>(_entities[1].properties[4]);
+      obx.QueryIntegerProperty<TestResult>(_entities[0].properties[4]);
+}
+
+/// [AggregateResult] entity fields to define ObjectBox queries.
+class AggregateResult_ {
+  /// see [AggregateResult.id]
+  static final id =
+      obx.QueryIntegerProperty<AggregateResult>(_entities[1].properties[0]);
+
+  /// see [AggregateResult.testId]
+  static final testId =
+      obx.QueryIntegerProperty<AggregateResult>(_entities[1].properties[1]);
+
+  /// see [AggregateResult.mean]
+  static final mean =
+      obx.QueryDoubleProperty<AggregateResult>(_entities[1].properties[2]);
+
+  /// see [AggregateResult.count]
+  static final count =
+      obx.QueryIntegerProperty<AggregateResult>(_entities[1].properties[3]);
+
+  /// see [AggregateResult.p25]
+  static final p25 =
+      obx.QueryDoubleProperty<AggregateResult>(_entities[1].properties[4]);
+
+  /// see [AggregateResult.p50]
+  static final p50 =
+      obx.QueryDoubleProperty<AggregateResult>(_entities[1].properties[5]);
+
+  /// see [AggregateResult.p75]
+  static final p75 =
+      obx.QueryDoubleProperty<AggregateResult>(_entities[1].properties[6]);
 }

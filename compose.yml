@@ -1,3 +1,4 @@
+# To run, simply run the `compose.yaml` file. At present, only the port is configurable. You can then interact with the server using cURLs.
 services:
   server-stuff:
     image: nikmoores/markr-server
